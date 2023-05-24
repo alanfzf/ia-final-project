@@ -20,6 +20,7 @@ Adafruit_PN532 nfc(D5, D6, D7, D4);
 
 const char* ssid = "INT_CASA";
 const char* password = "Internet170casa_321";
+=======
 
 
 void setup(void) {
@@ -42,6 +43,14 @@ void setup(void) {
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print(".");
+  }
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Conectando a WiFi...");
+
   }
 
   // Got ok data, print it out!
