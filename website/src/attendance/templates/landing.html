@@ -1,0 +1,28 @@
+{% extends 'default.html' %}
+{% block inside %}
+
+<div class='flex flex-col items-center'>
+  <!-- table -->
+  <div class="w-3/4">
+    <table class="min-w-full text-left text-sm font-light">
+      <thead class="border-b font-medium">
+        <tr>
+          <th scope="col" class="px-6 py-4">#</th>
+          <th scope="col" class="px-6 py-4">First</th>
+          <th scope="col" class="px-6 py-4">Last</th>
+          <th scope="col" class="px-6 py-4">Handle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100">
+          <td class="whitespace-nowrap px-6 py-4 font-medium">1</td>
+          <td class="whitespace-nowrap px-6 py-4">Mark</td>
+          <td class="whitespace-nowrap px-6 py-4">Otto</td>
+          <td class="whitespace-nowrap px-6 py-4">@mdo</td>
+        </tr>
+      </tbody>
+    </table>    
+  </div>
+</div>
+
+{% endblock %}
