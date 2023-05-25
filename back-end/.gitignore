@@ -3,8 +3,6 @@
 env/
 .env
 /src/images/*
-/src/pickles/*
-/src/recognizers/*
-!/src/images/.gitkeep
-!/src/pickles/.gitkeep
-!/src/recognizers/.gitkeep
+/src/training/
+/src/processed/
+/src/facetest/
