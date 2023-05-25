@@ -20,8 +20,6 @@ Adafruit_PN532 nfc(D5, D6, D7, D4);
 
 const char* ssid = "INT_CASA";
 const char* password = "Internet170casa_321";
-=======
-
 
 void setup(void) {
   pinMode(greenPin, OUTPUT);

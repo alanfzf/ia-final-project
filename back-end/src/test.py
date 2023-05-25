@@ -17,7 +17,6 @@ with open(get_face_labels_file(), "rb") as f:
     class_dictionary = pickle.load(f)
 
 class_list = [value for _, value in class_dictionary.items()]
-print(class_list)
 
 # face detection
 facecascade = cv2.CascadeClassifier(f'{cv2.data.haarcascades}haarcascade_frontalface_default.xml')
@@ -53,6 +52,16 @@ for i in range(3):
 
         # making prediction
         predicted_prob = model.predict(prep_img)
-        print(predicted_prob)
-        # print(predicted_prob[0].argmax())
-        # print("Predicted face: " + class_list[predicted_prob[0].argmax()])
+        
+        print(test_image_filename)
+        for pred in predicted_prob:
+            l = list(pred)
+            print(l)
+            print("{0:.2%}".format(l[0]))
+            print("{0:.2%}".format(l[1]))
+
+
+        print("==========================")
+        print(f"DATA: {predicted_prob}, {predicted_prob[0].argmax()}")
+        print("Predicted face: " + class_list[predicted_prob[0].argmax()])
+        print("==========================\n")

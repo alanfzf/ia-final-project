@@ -1,7 +1,7 @@
+# imports
 import pickle
 # tensorflow
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
-from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.mobilenet import preprocess_input
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Model
@@ -16,23 +16,18 @@ train_generator.class_indices.values()
 
 NO_CLASSES = len(train_generator.class_indices.values())
 
-
-
 base_model = VGGFace(include_top=False, model='vgg16', input_shape=(224, 224, 3)) 
 base_model.summary()
 print(len(base_model.layers))
 
-
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
-
 x = Dense(1024, activation='relu')(x)
 x = Dense(1024, activation='relu')(x)
 x = Dense(512, activation='relu')(x)
 
 # final layer with softmax activation
 preds = Dense(NO_CLASSES, activation='softmax')(x)
-
 
 # create a new model with the base model's original input and the new model's output
 model = Model(inputs = base_model.input, outputs = preds)
@@ -49,7 +44,6 @@ for layer in model.layers[19:]:
 model.compile(optimizer='Adam',loss='categorical_crossentropy', metrics=['accuracy'])
 model.fit(train_generator, batch_size = 1, verbose = 1, epochs = 20)
 
-
 # creates a HDF5 file
 model.save(get_face_train_file())
 
@@ -59,7 +53,6 @@ class_dictionary = {
     value:key for key, value in class_dictionary.items()
 }
 print(class_dictionary)
-
 
 # save the class dictionary to pickle
 with open(get_face_labels_file(),'wb') as f: 
