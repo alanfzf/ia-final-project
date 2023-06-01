@@ -54,12 +54,6 @@ for i in range(3):
         predicted_prob = model.predict(prep_img)
         
         print(test_image_filename)
-        for pred in predicted_prob:
-            l = list(pred)
-            print(l)
-            print("{0:.2%}".format(l[0]))
-            print("{0:.2%}".format(l[1]))
-
 
         print("==========================")
         print(f"DATA: {predicted_prob}, {predicted_prob[0].argmax()}")
