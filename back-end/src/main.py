@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from folder_dirs import get_recognizer_folder, get_pickle_folder
+from folders import get_recognizer_folder, get_pickle_folder
 import cv2
 import os
 import pickle

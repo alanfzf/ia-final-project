@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 from PIL import Image
-from folder_dirs import get_images, get_pickle_folder, get_recognizer_folder
+from folders import get_images, get_pickle_folder, get_recognizer_folder
 
 images = get_images()
 pkl_file = get_pickle_folder('face-labels.pickle')

@@ -1,37 +1,39 @@
 # imports
 import pickle
 # tensorflow
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
-from tensorflow.keras.applications.mobilenet import preprocess_input
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Model
+from keras.layers import Dense, GlobalAveragePooling2D
+from keras.applications.mobilenet import preprocess_input
+from keras.preprocessing.image import ImageDataGenerator
+from keras.models import Model
 from keras_vggface.vggface import VGGFace
 # folders
 from folders import get_face_labels_file, get_face_train_file, get_processed_folder
 
+W,H = 224,224
+
+
 
 train_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
-train_generator = train_datagen.flow_from_directory(get_processed_folder(), target_size=(224,224), color_mode='rgb', batch_size=32, class_mode='categorical', shuffle=True)
-train_generator.class_indices.values()
+train_generator = train_datagen.flow_from_directory(get_processed_folder(), 
+                                                    target_size=(W,H), 
+                                                    color_mode='rgb', 
+                                                    batch_size=32, 
+                                                    class_mode='categorical', 
+                                                    shuffle=True)
 
 NO_CLASSES = len(train_generator.class_indices.values())
 
-base_model = VGGFace(include_top=False, model='vgg16', input_shape=(224, 224, 3)) 
-base_model.summary()
-print(len(base_model.layers))
+base_model = VGGFace(include_top=False, model='vgg16', input_shape=(W, H, 3)) 
 
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
 x = Dense(1024, activation='relu')(x)
 x = Dense(512, activation='relu')(x)
-
-# final layer with softmax activation
 preds = Dense(NO_CLASSES, activation='softmax')(x)
 
 # create a new model with the base model's original input and the new model's output
 model = Model(inputs = base_model.input, outputs = preds)
-model.summary()
 
 # don't train the first 19 layers - 0..18
 for layer in model.layers[:19]:

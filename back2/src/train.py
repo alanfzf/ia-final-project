@@ -1,5 +1,5 @@
 # folder access
-from folders import get_face_train_file, get_face_train_file_lite, get_processed_folder
+from folders import get_face_train_file_lite, get_processed_folder
 
 # opencv stuff
 import cv2
@@ -16,28 +16,38 @@ W,H = 224, 224
 NB_CLASS = 2
 LEARNING_RATE = 0.0001
 
+
+
 def do_training():
+    # hate verbose stuff
+    tf.get_logger().setLevel('ERROR')
     #load the data set
-    train_dataset = tf.keras.preprocessing.image_dataset_from_directory(get_processed_folder(),
-                                                                        shuffle=True, 
-                                                                        batch_size=8, 
-                                                                        image_size=(W,H))
+    train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
+        get_processed_folder(),
+        labels='inferred',
+        shuffle=True, 
+        batch_size=8, 
+        image_size=(W,H))
+
+    class_names = train_dataset.class_names
+
     #load the base face recognition model
-    vggface_resnet_base = VGGFace(model='resnet50', 
-                                  include_top=False, 
-                                  input_shape=(W,H,3))
+    resnet_base = VGGFace(
+        model='resnet50', 
+        include_top=False, 
+        input_shape=(W,H,3))
 
     data_augmentation = Sequential([
         RandomFlip('horizontal'),
         RandomRotation(0.2) ])
 
     # freeze the base model
-    vggface_resnet_base.trainable = False
+    resnet_base.trainable = False
 
     # build the new model
-    inputs = tf.keras.Input(shape=(224, 224,3 ))
+    inputs = tf.keras.Input(shape=(W, H,3 ))
     x = data_augmentation(inputs)
-    x = vggface_resnet_base(x)
+    x = resnet_base(x)
     x = Flatten(name='flatten')(x)
 
     out = Dense(NB_CLASS, name='classifier')(x)
@@ -56,14 +66,15 @@ def do_training():
         model,
         tf.keras.layers.Softmax()
     ])
-    model.save(get_face_train_file())
 
+    # model.save(get_face_train_file())
+    # create_tf_lite_file(prob_model)
     # do some tests
-    check_faces(prob_model)
+    check_faces(prob_model, class_names)
 
 
-def check_faces(tf_model):
-    from tensorflow.keras.utils import img_to_array
+def check_faces(tf_model, class_name):
+    from keras.utils import img_to_array
     from keras_vggface import utils
 
     face_cascade = cv2.CascadeClassifier(f'{cv2.data.haarcascades}haarcascade_frontalface_default.xml')
@@ -75,7 +86,7 @@ def check_faces(tf_model):
         faces = face_cascade.detectMultiScale(imgtest, scaleFactor=1.1, minNeighbors=5)
 
         for (x, y, w, h) in faces:
-            size = (224, 224)
+            size = (W, H)
             roi = image_array[y: y + h, x: x + w]
             resized_image = cv2.resize(roi, size)
 
@@ -84,20 +95,18 @@ def check_faces(tf_model):
             prep_img = utils.preprocess_input(prep_img, version=1)
 
             results = tf_model.predict(prep_img)
+            winner = results[0].argmax()
+            print(f"Probability: {results}, {winner}")
+            print(f"Predicted face: {class_name[winner]}")
 
-            print(img)
-            for result in results:
-                print(str(result))
 
 
 def create_tf_lite_file(tf_model):
-    # lite tensorflow
-    vggface_resnet_converter = tf.lite.TFLiteConverter.from_keras_model(tf_model)
-    vggface_resnet_converter.optimizations = [tf.lite.Optimize.DEFAULT]
-    vggface_resnet_tflite = vggface_resnet_converter.convert()
-
+    resnet_converter = tf.lite.TFLiteConverter.from_keras_model(tf_model)
+    resnet_converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    resnet_tflite = resnet_converter.convert()
+    # save file
     with open(get_face_train_file_lite(), 'wb') as f:
-        f.write(vggface_resnet_tflite)
-
+        f.write(resnet_tflite)
 
 do_training()

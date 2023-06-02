@@ -1,11 +1,11 @@
-# other shit
+# other 
 import cv2
 import pickle
 import numpy as np
 # keras
 from keras_vggface import utils
-from tensorflow.keras.utils import img_to_array
-from tensorflow.keras.models import load_model
+from keras.utils import img_to_array
+from keras.models import load_model
 # folders
 from folders import get_face_labels_file, get_face_train_file
 

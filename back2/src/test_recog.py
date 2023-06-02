@@ -2,7 +2,8 @@ from folders import get_face_train_file
 from keras import Sequential
 from keras.models import load_model
 from keras_vggface import utils
-from tensorflow.keras.utils import img_to_array
+from keras.utils import img_to_array
+
 import cv2
 import numpy as np
 import tensorflow as tf
