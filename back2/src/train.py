@@ -13,14 +13,12 @@ from keras.layers import Flatten, Dense, RandomFlip, RandomRotation
 from keras_vggface.vggface import VGGFace
 
 W,H = 224, 224
-NB_CLASS = 2
 LEARNING_RATE = 0.0001
-
-
 
 def do_training():
     # hate verbose stuff
     tf.get_logger().setLevel('ERROR')
+
     #load the data set
     train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
         get_processed_folder(),
@@ -30,6 +28,10 @@ def do_training():
         image_size=(W,H))
 
     class_names = train_dataset.class_names
+    size = len(class_names)
+
+    print(f"{class_names}, {size}")
+
 
     #load the base face recognition model
     resnet_base = VGGFace(
@@ -50,7 +52,7 @@ def do_training():
     x = resnet_base(x)
     x = Flatten(name='flatten')(x)
 
-    out = Dense(NB_CLASS, name='classifier')(x)
+    out = Dense(size, name='classifier')(x)
     model = keras.Model(inputs, out)
 
     # train the model
@@ -69,7 +71,6 @@ def do_training():
 
     # model.save(get_face_train_file())
     # create_tf_lite_file(prob_model)
-    # do some tests
     check_faces(prob_model, class_names)
 
 
