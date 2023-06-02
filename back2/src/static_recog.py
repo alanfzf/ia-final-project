@@ -1,23 +1,25 @@
-from folders import get_face_train_file
+from folders import get_face_train_file, get_face_labels_file
 from keras import Sequential
 from keras.models import load_model
 from keras_vggface import utils
 from keras.utils import img_to_array
 
 import cv2
+import pickle
 import numpy as np
 import tensorflow as tf
 
 face_cascade = cv2.CascadeClassifier(f'{cv2.data.haarcascades}haarcascade_frontalface_default.xml')
 model = load_model(get_face_train_file())
-prob_model = Sequential([
-    model,
-    tf.keras.layers.Softmax()
-])
+prob_model = Sequential([ model, tf.keras.layers.Softmax() ])
 
+# load labels
+with open(get_face_labels_file(), "rb") as f: 
+    class_dictionary = pickle.load(f)
+
+class_list = [value for _, value in class_dictionary.items()]
 
 def check_faces(tf_model):
-
     face_cascade = cv2.CascadeClassifier(f'{cv2.data.haarcascades}haarcascade_frontalface_default.xml')
     list = ['./facetest/face0.jpg', './facetest/face1.jpg', './facetest/face2.jpg']
 
@@ -37,8 +39,9 @@ def check_faces(tf_model):
 
             results = tf_model.predict(prep_img)
 
-            print(img)
-            for result in results:
-                print(str(result))
+            winner = results[0].argmax()
+            print(f"Photo: {img}")
+            print(f"Probability: {results}, {winner}")
+            print(f"Predicted face: {class_list[winner]}")
 
 check_faces(prob_model)
