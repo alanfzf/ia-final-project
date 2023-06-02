@@ -51,4 +51,3 @@ def get_face_train_file_lite():
     folder = get_training_folder()
     ftrain = os.path.join(folder, 'vggface_resnet_quant.tflite')
     return ftrain
-

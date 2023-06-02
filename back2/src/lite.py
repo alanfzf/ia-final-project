@@ -2,7 +2,6 @@ import tensorflow as tf
 
 class LitePredictionModel:
 
-
     def __init__(self, path):
         self.interpreter = tf.lite.Interpreter(model_path=path)
         self.interpreter.allocate_tensors()
