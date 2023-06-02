@@ -1,3 +1,4 @@
+import tensorflow as tf
 import numpy as np
 import cv2
 import pickle
@@ -56,16 +57,15 @@ while(True):
         prep_img = utils.preprocess_input(prep_img, version=1)
 
         # predict the image
-        predicted_prob = prob_model.predict(prep_img)
-        person = predicted_prob[0].argmax()
-        print(predicted_prob)
-
+        predicted_prob = prob_model.predict(prep_img, verbose=0)
+        person = tf.argmax(predicted_prob, axis=1)[0].numpy()
+        max_probability = tf.reduce_max(predicted_prob, axis=1)[0].numpy()
 
         # Display the label
         color = (255, 0, 255)
         name = labels[person]
         stroke = 2
-        cv2.putText(frame, f'({name}) 80%', (x,y-8), cv2.FONT_HERSHEY_SIMPLEX, 1, color, stroke, cv2.LINE_AA)
+        cv2.putText(frame, f'({name}) {max_probability:.2f}%', (x,y-8), cv2.FONT_HERSHEY_SIMPLEX, 1, color, stroke, cv2.LINE_AA)
 
     # Show the frame
     cv2.imshow("Image", frame)
