@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load widget_tweaks %}
+
+<main class="bg-light vh-100">
+
+  <div class='container h-100'>
+    <div class="row h-100">
+      <div class="d-flex flex-column align-items-center justify-content-center">
+
+        {% if form.errors %}
+
+        <div class="w-50 alert alert-warning alert-dismissible fade show" role="alert">
+          <strong> Por favor verifica tu contraseña</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+          </button>
+        </div>
+
+        {%endif %}
+
+        <div class="w-50 bg-white rounded-lg p-4 shadow-sm">
+          <h1 class="text-center">Iniciar sesión</h1>
+          <form action="" method="POST" class="">
+            {% csrf_token %}
+            <div class="mt-4">
+              <label for="username">
+                Nombre de usuario
+              </label>
+              {{ form.username|add_class:'form-control'|attr:'autocomplete:off'}}
+            </div>
+
+            <div class="mt-4">
+              <label for="username">
+                Contraseña
+              </label>
+              {{ form.password|add_class:'form-control'|attr:'autocomplete:off'}}
+            </div>
+
+            <div class="mt-4">
+              <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+            </div>
+          </form>
+        </div>
+
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+{% endblock %}

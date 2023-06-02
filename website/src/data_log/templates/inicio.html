@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="vh-100">
+
+  <!-- navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <a class="navbar-brand" href="">Dashboard</a>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'admin:index' %}">Ajustes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'authenticate:logout' %}">Cerrar sesión</a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- content -->
+  <div class="container h-100 mt-4">
+    <h1>Hola: {{ user.get_username }}</h1>
+    <p>Region: {{ user.region }}</h1>
+  </div>
+
+</main>
+
+{% endblock %}
