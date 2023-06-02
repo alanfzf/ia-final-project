@@ -1,5 +1,6 @@
 import os
 import pathlib
+import shutil
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,5 +45,15 @@ def get_face_labels_file():
 
 def get_face_train_file():
     folder = get_training_folder()
-    ftrain = os.path.join(folder, 'transfer_learning_trained_face_cnn_model.h5')
+    ftrain = os.path.join(folder, 'trained_model_resnet.h5')
     return ftrain
+
+def get_face_train_file_lite():
+    folder = get_training_folder()
+    ftrain = os.path.join(folder, 'trained_model_resnet.tflite')
+    return ftrain
+
+def clear_training():
+    folders = [get_processed_folder(), get_training_folder()]
+    for folder in folders:
+        shutil.rmtree(folder)
