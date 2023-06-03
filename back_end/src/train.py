@@ -1,6 +1,5 @@
 # folder access
-from folders import clear_training, get_face_train_file_lite, get_processed_folder, get_face_labels_file, get_face_train_file, get_processed_file, get_images
-
+from folders import PROCCESED_FOLDER, clean_training_files, get_dir_for_labels_file, get_dir_for_processed_file, get_dir_for_training_file, get_folder, get_images
 # opencv stuff
 import cv2
 import numpy as np
@@ -17,14 +16,12 @@ from keras_vggface.vggface import VGGFace
 W,H = 224, 224
 LEARNING_RATE = 0.0001
 
-
 def prepare_dataset():
-    clear_training()
-
+    clean_training_files()
     images = get_images()
     face_classifier = cv2.CascadeClassifier(f'{cv2.data.haarcascades}haarcascade_frontalface_default.xml')
 
-    for _id, label in enumerate(images.keys()):
+    for _, label in enumerate(images.keys()):
         imgs = images[label]
 
         for img in imgs:
@@ -41,7 +38,7 @@ def prepare_dataset():
                 roi = img_array[y: y+h, x: x+w]
                 resized_image = cv2.resize(roi, (W, H))
                 img_array = np.array(resized_image, dtype=np.uint8)
-                file_name = get_processed_file(label, f"{uuid.uuid4()}.png") 
+                file_name = get_dir_for_processed_file(label, f"{uuid.uuid4()}.png") 
                 cv2.imwrite(file_name, img_array)
     print('Generated faces..!')
 
@@ -52,7 +49,7 @@ def do_training():
 
     #load the data set
     train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
-        get_processed_folder(),
+        get_folder(PROCCESED_FOLDER),
         labels='inferred',
         shuffle=True, 
         batch_size=8, 
@@ -98,7 +95,7 @@ def do_training():
     ])
 
     check_faces(prob_model, class_names)
-    model.save(get_face_train_file())
+    model.save(get_dir_for_training_file())
     save_labels(class_names)
     # create_tf_lite_file(prob_model)
 
@@ -129,20 +126,10 @@ def check_faces(tf_model, class_name):
             print(f"Probability: {results}, {winner}")
             print(f"Predicted face: {class_name[winner]}")
 
-
 def save_labels(labels):
     class_dict = {index: item for index, item in enumerate(labels)}
-    with open(get_face_labels_file(),'wb') as f: 
+    with open(get_dir_for_labels_file(),'wb') as f: 
         pickle.dump(class_dict, f)
-
-
-def save_tf_lite(tf_model):
-    resnet_converter = tf.lite.TFLiteConverter.from_keras_model(tf_model)
-    resnet_converter.optimizations = [tf.lite.Optimize.DEFAULT]
-    resnet_tflite = resnet_converter.convert()
-
-    with open(get_face_train_file_lite(), 'wb') as f:
-        f.write(resnet_tflite)
 
 prepare_dataset()
 do_training()

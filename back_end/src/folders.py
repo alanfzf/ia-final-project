@@ -2,11 +2,27 @@ import os
 import pathlib
 import shutil
 
+# base dir
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# folders
+IMG_FOLDER, PROCCESED_FOLDER, TRAINING_FOLDER = 1,2,3
 
-# base images folder
+def get_folder(ftype):
+    folder = os.path.join(BASE_DIR, "files")
+    if ftype == IMG_FOLDER:
+        folder = os.path.join(folder, "images")
+    elif ftype == PROCCESED_FOLDER:
+        folder = os.path.join(folder, "processed")
+    elif ftype == TRAINING_FOLDER: 
+        folder = os.path.join(folder, "training")
+    else:
+        return None 
+
+    pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
+    return folder
+
 def get_images():
-    image_dir = os.path.join(BASE_DIR, "images")
+    image_dir = get_folder(IMG_FOLDER)
     images = {}
 
     for root, _, files in os.walk(image_dir):
@@ -20,40 +36,27 @@ def get_images():
                     images[label].append(path)
     return images
 
-# processed images folders
-def get_processed_folder():
-    folder = os.path.join(BASE_DIR, "processed")
-    return folder
 
-def get_processed_file(label, file):
-    folder = os.path.join(BASE_DIR, "processed")
-    label_folder = os.path.join(folder, label)
-    pathlib.Path(label_folder).mkdir(parents=True, exist_ok=True)
-    pfile = os.path.join(label_folder, file)
-    return pfile
+def get_dir_for_processed_file(label, filename):
+    base_folder = get_folder(PROCCESED_FOLDER)
+    # create the folder of the label
+    base_folder = os.path.join(base_folder, label)
+    pathlib.Path(base_folder).mkdir(parents=True, exist_ok=True)
+    # return the file name
+    file = os.path.join(base_folder, filename)
+    return file
 
-# training stuff folders
-def get_training_folder():
-    folder = os.path.join(BASE_DIR, "training")
-    pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
-    return folder
+def get_dir_for_labels_file():
+    base_folder = get_folder(TRAINING_FOLDER)
+    label_file = os.path.join(base_folder, 'face_labels.pickle')
+    return label_file
 
-def get_face_labels_file():
-    folder = get_training_folder()
-    flabels = os.path.join(folder, 'face_labels.pickle')
-    return flabels
+def get_dir_for_training_file():
+    base_folder = get_folder(TRAINING_FOLDER)
+    training_file = os.path.join(base_folder, 'trained_model_resnet.h5')
+    return training_file
 
-def get_face_train_file():
-    folder = get_training_folder()
-    ftrain = os.path.join(folder, 'trained_model_resnet.h5')
-    return ftrain
-
-def get_face_train_file_lite():
-    folder = get_training_folder()
-    ftrain = os.path.join(folder, 'trained_model_resnet.tflite')
-    return ftrain
-
-def clear_training():
-    folders = [get_processed_folder(), get_training_folder()]
+def clean_training_files():
+    folders = [get_folder(TRAINING_FOLDER), get_folder(PROCCESED_FOLDER)]
     for folder in folders:
         shutil.rmtree(folder)

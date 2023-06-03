@@ -1,8 +1,5 @@
 **/__pycache__/
 *.pyc
 env/
-.env
-/src/images/*
-/src/training/
-/src/processed/
+/src/files/
 /src/facetest/
