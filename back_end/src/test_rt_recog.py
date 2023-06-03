@@ -6,8 +6,8 @@ from recog import FaceRecognizer
 
 # variables
 stream = cv2.VideoCapture(0)
-rectangle_color = (255, 0, 0)
-label_color = (255, 0, 0)
+rectangle_color = (48, 201, 59)
+label_color = (48, 201, 59)
 stroke = 2
 rcg = FaceRecognizer()
 face_cascade = cv2.CascadeClassifier(f'{cv2.data.haarcascades}haarcascade_frontalface_default.xml')
