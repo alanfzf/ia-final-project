@@ -1,7 +1,6 @@
 from django.db import models
-
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
+from data_log.models import Tarjeta
 
 class User(AbstractUser):
-    rfid_tag = models.TextField(null=True)
+    rfid_tag = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True)
