@@ -10,7 +10,7 @@ class Tarjeta(models.Model):
 
 class Registro(models.Model):
     persona_predecida = models.CharField(max_length=255, blank=False)
-    confianza = models.DecimalField(default=0.0, max_digits=4, decimal_places=4, verbose_name='Nivel de confianza')
+    confianza = models.DecimalField(default=0.0, max_digits=9, decimal_places=4, verbose_name='Nivel de confianza')
     tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True)
     captura = models.ImageField(upload_to="uploads/", null=True, blank=True)
     fecha = models.DateTimeField(default=datetime.now)

@@ -1,35 +1,38 @@
-import json
-import io
 import time
-from flask import Flask, send_file
-from picamera2 import Picamera2
+from pn532pi import Pn532, Pn532I2c, pn532
+from picam import RaspCam
 
+nfc = Pn532(Pn532I2c(1))
+cam = RaspCam()
 
+def setup():
+    nfc.begin()
+    time.sleep(2)
+    ver_data = nfc.getFirmwareVersion()
 
-app = Flask(__name__)
-app.use_x_send_file = True
+    if not ver_data:
+        raise RuntimeError("Could not find a board")
 
-@app.route('/')
-def index():
-    return json.dumps({
-        'name': 'alice',
-        'email': 'alice@outlook.com'
-    })
+    chip = (ver_data >> 24) & 0xFF
+    v1,v2 = (ver_data >> 16) & 0xFF, (ver_data >> 8) & 0xFF
 
-@app.route('/take_picture')
-def take_picture():
+    print(f"Found chip PN5 {chip:#x} Firmware ver. {v1:d}.{v2:d}")
 
-    picam2 = Picamera2()
-    capture_config = picam2.create_still_configuration()
-    picam2.configure(capture_config)
-    picam2.start()
+    nfc.setPassiveActivationRetries(0xFF)
+    nfc.SAMConfig()
+    print("Card setup done, waiting for a card...")
 
-    time.sleep(1)
-    data = io.BytesIO()
-    picam2.capture_file(data, format='jpeg')
-    picam2.close()
-    data.seek(0)
+def loop():
+    success, uid = nfc.readPassiveTargetID(pn532.PN532_MIFARE_ISO14443A_106KBPS)
 
-    return send_file(data, download_name='face.jpeg')
+    if success:
+        card_id = '-'.join(f'{n:02X}' for n in uid)
+        print(f"Found a card ({card_id}), length: {len(uid)}")
+        resp = cam.send_info(card_id)
+        print(resp)
+        time.sleep(5)
 
-app.run(host="0.0.0.0")
+if __name__ == '__main__':
+    setup()
+    while True:
+      loop()

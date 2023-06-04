@@ -1,15 +1,16 @@
+from django.test.client import HTTPStatus
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseServerError, JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import View
 # requests
 import requests
-from datetime import datetime
+import decimal
 # models
 from data_log.models import Registro, Tarjeta
 
@@ -39,31 +40,36 @@ class ReceiveData(CSRFExemptMixin, View):
         data = None
 
         if face is None or tag is None:
-            return HttpResponseBadRequest("Bad request, you must specify the rfid tag and face image")
+            return JsonResponse({"error": "Bad request, you must specify the rfid tag and face image"}, 
+                                status=HTTPStatus.BAD_REQUEST)
 
+        # check for the rfid tag
+        try:
+            tag = Tarjeta.objects.get(id_tarjeta=tag)
+        except Tarjeta.DoesNotExist:
+            return JsonResponse({"error": "RFID tag is not registered in the database!"}, 
+                                status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        # predict the face
         try:
             url = 'http://192.168.0.100:5000/predict'
             resp = requests.post(url, files={'face': face})
             data = resp.json()
         except:
-            return HttpResponseServerError("Server error, could not predict a face!")
+            return JsonResponse({"error": "Server error, could not contact with face prediction back-end"}, 
+                                status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
         if "error" in data:
-            return HttpResponseServerError(data.get('error'))
+            return JsonResponse(data, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
+        # obtain the data
         person = data.get('predicted_face')
-        prob = data.get('probability')
-        card = None
+        prob = decimal.Decimal(data.get('probability'))
+        prob = round(prob, 4)
 
-        try:
-            card = Tarjeta.objects.get(id_tarjeta=tag)
-        except Tarjeta.DoesNotExist:
-            return HttpResponseServerError("RFID tag is not registered in the database!")
-
-        # Create a new instance of MyModel
+        # Save the register
         register = Registro(persona_predecida=person, 
                             confianza=prob, captura=face, 
-                            tarjeta=card)
+                            tarjeta=tag)
         register.save()
-
         return JsonResponse(data)
