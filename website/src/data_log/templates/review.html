@@ -27,8 +27,38 @@
 
   <!-- content -->
   <div class="container mt-4">
-    <h1>Reviewing: {{ pk }}</h1>
-  </div>
+    <h1>Revisando registro #{{registro.id}}</h1>
+    <hr/>
 
+    <div class="d-flex">
+      <form class="w-50">
+        <div class="mb-3">
+          <label>Persona</label>
+          <input class="form-control" value='{{registro.persona_predecida}}' disabled/>
+        </div>
+        <div class="mb-3">
+          <label>Nivel de confianza</label>
+          <input class="form-control" value='{{registro.confianza}}' disabled/>
+        </div>
+        <div class="mb-3">
+          <label>Tarjeta RFID</label>
+          <input class="form-control" value='{{registro.tarjeta}}' disabled/>
+        </div>
+
+        <div class="mb-3">
+          <label>Fecha</label>
+          <input class="form-control" value='{{registro.fecha|date:"SHORT_DATE_FORMAT"}} {{registro.fecha|time:"h:i:s a"}}' disabled/>
+        </div>
+        <div class="mt-4 d-md-block">
+          <a class='btn btn-secondary w-25' href="{% url 'data:index' %}">Regresar</a>
+        </div>
+      </form>
+
+      <!-- image -->
+      <div class="w-50 px-5">
+        <img class='w-100' src="{{registro.captura.url}}" />
+      </div>
+    </div>
+  </div>
 </main>
 {% endblock %}

@@ -13,7 +13,7 @@ class Registro(models.Model):
     confianza = models.DecimalField(default=0.0, max_digits=4, decimal_places=4, verbose_name='Nivel de confianza')
     tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True)
     captura = models.ImageField(upload_to="uploads/", null=True, blank=True)
-    fecha = models.DateField(default=datetime.now)
+    fecha = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return f"{self.persona_predecida}, {str(self.tarjeta)}"

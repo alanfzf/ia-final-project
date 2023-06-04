@@ -31,6 +31,7 @@
     <table class="table table-striped table-hover">
       <thead>
         <tr>
+          <th>RID</th>
           <th scope="col">Persona predecida</th>
           <th scope="col">Confianza</th>
           <th scope="col">Tarjeta</th>
@@ -39,15 +40,19 @@
         </tr>
       </thead>
       <tbody>
+        {% for registro in registros %}
         <tr>
-          <th scope="row">1</th>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
+          <th scope="row">{{registro.id}}</th>
+          <td>{{ registro.persona_predecida }}</td>
+          <td>{{ registro.confianza }}</td>
+          <td>{{ registro.tarjeta }}</td>
+          <td>{{ registro.fecha }}</td>
           <td>
-            <a href="{% url 'data:review' 1 %}" class="btn btn-success">Visualizar</a>
+            <a href="{% url 'data:review' registro.id %}" class="btn btn-success">Visualizar</a>
           </td>
         </tr>
+        {% endfor %}
+
       </tbody>
     </table>
   </div>

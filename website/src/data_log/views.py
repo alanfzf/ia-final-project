@@ -18,10 +18,12 @@ class Dashboard(LoginRequiredMixin, ListView):
     model = Registro
     login_url = reverse_lazy('authenticate:login')
     template_name = 'inicio.html'
+    context_object_name = 'registros'
 
 class ReviewData(LoginRequiredMixin, DetailView):
     login_url = reverse_lazy('authenticate:login')
     template_name = 'review.html'
+    context_object_name = 'registro'
     model = Registro
 
 class CSRFExemptMixin(object):
