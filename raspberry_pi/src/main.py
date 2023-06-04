@@ -27,9 +27,7 @@ def take_picture():
     time.sleep(1)
     data = io.BytesIO()
     picam2.capture_file(data, format='jpeg')
-    print(data.getbuffer().nbytes)
     picam2.close()
-
     data.seek(0)
 
     return send_file(data, download_name='face.jpeg')

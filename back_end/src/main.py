@@ -15,8 +15,10 @@ def predict_image():
         return Response(
             "Invalid request, you must upload the image with a key called 'face'",
             status=400)
+    file = request.files['face']
+    # file.save(f'./{file.name}')
 
-    image_stream = request.files['face'].stream
+    image_stream = file.stream
     image_array = bytearray(image_stream.read())
     result = model.predict_face(image_array)
 
