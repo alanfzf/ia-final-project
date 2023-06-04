@@ -3,3 +3,4 @@
 env/
 .env
 /src/db.sqlite3
+/src/uploads/
