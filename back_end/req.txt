@@ -4,3 +4,4 @@ opencv-contrib-python==4.7.0.72
 tensorflow<2.11
 Keras-Applications==1.0.8
 git+https://github.com/rcmalli/keras-vggface.git
+Flask==2.3.2
