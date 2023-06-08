@@ -1,7 +1,9 @@
-# Proyecto IA
+# AI Project
+
+Face recognition system using a raspberry pi and a pn532 tag reader.
 
 ## Raspberry PI
-Configure the python env to use raspi cam
+Configure the python env to use the raspi cam
 
 ```bash
 python -m venv env --system-site-package
